@@ -162,7 +162,7 @@ TEST(GradientCheckingCostFunction, ResidualsAndJacobiansArePreservedTest) {
   const double kRelativePrecision = 1e-4;
 
   TestTerm<-1, -1> term(arity, dim);
-  CreateGradientCheckingCostFunction callback;
+  GradientCheckingIterationCallback callback;
   scoped_ptr<CostFunction> gradient_checking_cost_function(
       CreateGradientCheckingCostFunction(&term, NULL,
                                          kRelativeStepSize,

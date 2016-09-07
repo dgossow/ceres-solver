@@ -57,7 +57,7 @@ using std::vector;
 // version, they are both block vectors, of course.
 class GoodTestTerm : public CostFunction {
  public:
-  GoodTestTerm(int arity, int const *dim) : arity_(arity), return_value_(true) {
+  GoodTestTerm(int arity, int const *dim) : return_value_(true), arity_(arity) {
     // Make 'arity' random vectors.
     a_.resize(arity_);
     for (int j = 0; j < arity_; ++j) {
@@ -381,13 +381,9 @@ TEST(GradientChecker, TestCorrectnessWithLocalParameterizations) {
   Eigen::Vector3d param0(1.0, 2.0, 3.0);
   Eigen::Vector2d param1(4.0, 5.0);
 
-  int const arity = 2;
-  const int dim[2] = {3, 2};
-
   cost_function.AddParameter(j0);
   cost_function.AddParameter(j1);
 
-  int const num_parameters = 2;
   std::vector<int> parameter_sizes(2);
   parameter_sizes[0] = 3;
   parameter_sizes[1] = 2;
@@ -502,14 +498,15 @@ TEST(GradientChecker, TestCorrectnessWithLocalParameterizations) {
   CheckDimensions(results, parameter_sizes, local_parameter_sizes, 3);
   ASSERT_EQ(results.local_jacobians.size(), 2);
   ASSERT_EQ(results.local_numeric_jacobians.size(), 2);
-  EXPECT_TRUE(results.local_jacobians.at(0) == (j0 + j0_offset) * global_J_local);
-  EXPECT_TRUE(results.local_jacobians.at(1) == j1);
+  EXPECT_TRUE(results.local_jacobians.at(0).isApprox(
+      (j0 + j0_offset) * global_J_local, kTolerance));
+  EXPECT_TRUE(results.local_jacobians.at(1).isApprox(j1, kTolerance));
   EXPECT_TRUE(
       results.local_numeric_jacobians.at(0).isApprox(j0 * global_J_local,
                                                      kTolerance));
   EXPECT_TRUE(results.local_numeric_jacobians.at(1).isApprox(j1, kTolerance));
-  EXPECT_TRUE(results.jacobians.at(0) == j0 + j0_offset);
-  EXPECT_TRUE(results.jacobians.at(1) == j1);
+  EXPECT_TRUE(results.jacobians.at(0).isApprox(j0 + j0_offset, kTolerance));
+  EXPECT_TRUE(results.jacobians.at(1).isApprox(j1, kTolerance));
   EXPECT_TRUE(results.numeric_jacobians.at(0).isApprox(j0, kTolerance));
   EXPECT_TRUE(results.numeric_jacobians.at(1).isApprox(j1, kTolerance));
   EXPECT_GT(results.worst_relative_error, 0.0);

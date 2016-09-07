@@ -168,8 +168,6 @@ GradientChecker::GradientChecker(
 bool GradientChecker::Probe(double const* const * parameters,
                             double relative_precision,
                             GradientCheckResults* results_param) const {
-  int num_residuals = function_->num_residuals();
-
   // Make sure that we have a place to store results, no matter if the user has
   // provided an output argument.
   GradientCheckResults* results;
